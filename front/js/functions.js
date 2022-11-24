@@ -1,4 +1,5 @@
 
+
 function displayCardProduct(name, description, src, alt, id) {
   var sectionProducts = document.getElementById("items")
   var a = document.createElement("a")
@@ -60,4 +61,68 @@ function getProductIdInUrl() {
   const url = new URL(window.location.href)
   const id = url.searchParams.get("id")
   return id
+}
+
+function displayCartProduct(product) {
+  //Creation des balises
+  const sectionCart = document.getElementById("cart__items")
+  const article = document.createElement(`article`)
+  const imgContainer = document.createElement("div")
+  const img = document.createElement("img")
+  const infoContainer = document.createElement("div")
+  const descriptionContainer = document.createElement("div")
+  const h2 = document.createElement("h2")
+  const pColor = document.createElement("p")
+  const pPrice = document.createElement("p")
+  const settingContainer = document.createElement("div")
+  const quantityContainer = document.createElement("div")
+  const pQuantity = document.createElement("p")
+  const input = document.createElement("input")
+  const actionContainer = document.createElement("div")
+  const pDelete = document.createElement("p")
+ 
+  //Ajout des attributs et des valeurs
+  article.setAttribute("class", "cart__item")
+  article.setAttribute("data-id", product._id)
+  article.setAttribute(`data-color`, product.color)
+  sectionCart.appendChild(article)
+
+  imgContainer.setAttribute("class", "cart__item__img")
+  img.setAttribute("src", product.imageUrl)
+  img.setAttribute("alt", product.altTxt) 
+  imgContainer.appendChild(img)
+  article.appendChild(imgContainer)
+
+  infoContainer.setAttribute("class", "cart__item__content")
+  descriptionContainer.setAttribute("class", "cart__item__content__description")
+  infoContainer.appendChild(descriptionContainer)
+
+  h2.innerText = product.name
+  pColor.innerText = product.color 
+  pPrice.innerText = (product.price * product.qty + " €")
+  descriptionContainer.appendChild(h2) 
+  descriptionContainer.appendChild(pColor)
+  descriptionContainer.appendChild(pPrice)
+
+  settingContainer.setAttribute("class", "cart__item__content__settings")
+  quantityContainer.setAttribute("class", "cart__item__content__settings__quantity")
+  pQuantity.innerHTML = "Qté : "
+  article.appendChild(infoContainer)
+  infoContainer.appendChild(settingContainer)
+  settingContainer.appendChild(quantityContainer)
+  quantityContainer.appendChild(pQuantity )
+
+  input.setAttribute("type", "number")
+  input.setAttribute("class", "itemQuantity")
+  input.setAttribute("name", "itemQuantity")
+  input.setAttribute("min", "1")
+  input.setAttribute("max", "100")
+  input.setAttribute("value", product.qty)
+  quantityContainer.appendChild(input)
+
+  actionContainer.setAttribute("class", "cart__item__content__settings__delete")
+  pDelete.setAttribute("class", "deleteItem") 
+  pDelete.innerHTML = "Supprimer"
+  settingContainer.appendChild(actionContainer)
+  actionContainer.appendChild(pDelete)
 }
