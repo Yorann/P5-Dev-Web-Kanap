@@ -5,21 +5,14 @@ function changeProductQuantity(event) {
   const productId = parent.dataset.id
   const productColor = parent.dataset.color
   const qty = el.value
-  const elPrice = document.querySelector ('article[data-id="' +
-   productId +
-    '"] ' +
+  const elPrice = parent.querySelector (
      '.cart__item__content__description p:nth-child(3)'
      )
 
   // Recherche du produit, ayant pour id productId et couleur productColor
   const products = getProductFromLocalStorage()
-  const productIndex = products.findIndex(function (product) {
-    if (product._id === productId && product.color === productColor) {
-      return true;
-    } else {
-      return false;
-    }
-  });
+ const productIndex = findProductByIdAndColor(products , productId, productColor)
+
   //Mise à jour de la quantité de produits
   if (productIndex > -1) {
     products[productIndex].qty = parseInt(qty)
@@ -27,7 +20,7 @@ function changeProductQuantity(event) {
   }
 
   localStorage.setItem("basket", JSON.stringify(products))
-
+  setTotalQuantityProduct(products)
   displayTotalPrice(products)
 }
 
@@ -54,16 +47,8 @@ function deleteCartProduct(event) {
 
   // Recherche du produit, ayant pour id productId et couleur ProductColor
   const products = getProductFromLocalStorage()
-  if (!products) {
-    return
-  }
-  const productIndex = products.findIndex(function (product) {
-    if (product._id === productId && product.color === productColor) {
-      return true;
-    } else {
-      return false;
-    }
-  });
+  const productIndex = findProductByIdAndColor(products , productId, productColor)
+
 
   // suppression du produit dans le local Storage et convertion en chaine de caractère
   if (productIndex > -1) {
@@ -76,8 +61,24 @@ function deleteCartProduct(event) {
 
   //Recalcul après suppression
   displayTotalPrice(products)
+  setTotalQuantityProduct(products)
 }
 
+/**
+ * Retourne la quantité totale de produit depuis le local storage
+ * @returns int
+ */
+function getTotalQuantityProducts(products){
+  let total = 0
+  for(let product of products) {
+    total = total + product.qty
+  }
+  return total
+}
+function setTotalQuantityProduct(products){
+  const elTotalArticles = document.getElementById("totalQuantity")
+  elTotalArticles.innerText = getTotalQuantityProducts(products)
+}
 //Creation des balises
 function displayCartProduct(product) {
   const sectionCart = document.getElementById("cart__items")
@@ -95,8 +96,6 @@ function displayCartProduct(product) {
   const input = document.createElement("input")
   const actionContainer = document.createElement("div")
   const pDelete = document.createElement("p")
-  const elTotalArticles = document.getElementById("totalQuantity")
-  elTotalArticles.innerText = product.qty
 
   //Ajout des attributs et des valeurs
   article.setAttribute("class", "cart__item")
@@ -162,6 +161,7 @@ function displayCart() {
   }
 
   displayTotalPrice(products)
+  setTotalQuantityProduct(products)
 }
 
 displayCart();

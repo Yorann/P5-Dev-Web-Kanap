@@ -38,3 +38,13 @@ function getProductFromLocalStorage() {
   const products = JSON.parse(storageContent)
   return products
 }
+function findProductByIdAndColor(products, id, color){
+  const productIndex = products.findIndex(function (product) {
+    if (product._id === id && product.color === color) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+    return productIndex
+}
