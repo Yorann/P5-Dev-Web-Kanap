@@ -1,13 +1,29 @@
-let product;
+// Contient l'objet produit de la page en cours
+let currentProduct;
+
+// Ajout d'une action au clic sur le bouton ajouter au panier
 const addToCartBtn = document.querySelector("#addToCart");
 addToCartBtn.addEventListener("click", addToCart);
 
-//function displaySingleProduct(title, price, description, colors) {
+/**
+ * Retourne un objet produit à partir de son identifiant
+ * @param {string} id
+ * @returns {Promise<Object>}
+ */
+ async function getProduct(id) {
+  const response = await fetch("http://localhost:3000/api/products/" + id);
+  return response.json();
+}
+
+/**
+ * Affiche les détails du produit sur la page produit
+ * @param {object} product
+ * @returns {void}
+ */
 function displaySingleProduct(product) {
-    if(!Object.keys(product).length){
-   
-        return
-    }
+  if (!Object.keys(product).length) {
+    return;
+  }
   const elTitle = document.getElementById("title");
   const elPrice = document.getElementById("price");
   const elDescription = document.getElementById("description");
@@ -26,18 +42,17 @@ function displaySingleProduct(product) {
   }
 }
 
-async function getProductById() {
-  const id = getKeyInUrl("id");
-  product = await getProduct(id);
-  displaySingleProduct(product);
-}
-
+/**
+ * Ajoute le produit de la page en cour au panier en fonction d'une couleur et d'une quantité
+ * @returns {void}
+ */
 function addToCart() {
+  const product = currentProduct;
+  if (!Object.keys(product).length) {
+    alert("Produit inexistant");
+    return;
+  }
 
-    if(!Object.keys(product).length){
-   alert("Produit inexistant")
-        return
-    }
   const elColor = document.getElementById("colors");
   const color = elColor.value;
   if (!color) {
@@ -51,6 +66,7 @@ function addToCart() {
     alert("Vous devez selectionner une quantité");
     return;
   }
+
   let basket = localStorage.getItem("basket");
   if (!basket) {
     basket = [];
@@ -58,32 +74,36 @@ function addToCart() {
     basket = JSON.parse(basket);
   }
 
-  let findProduct = basket.findIndex(function (value, index) {
-    if (value._id === product._id && value.color === color) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  if (findProduct > -1) {
-    //Produit existant//
-    const curentProduct = basket[findProduct];
-    curentProduct.qty = parseInt(curentProduct.qty) + parseInt(quantity);
+  const findIndex = findProductByIdAndColor(basket, product._id, color);
+  if (findIndex > -1) {
+    // Modification de la quantité d'un produit déja existant
+    const existProduct = basket[findIndex];
+    basket[findIndex].qty = parseInt(existProduct.qty) + parseInt(quantity);
+    alert("La quantité de produit " + existProduct.name + " à été augmentée");
   } else {
-    //Nouveau produit//
+    // Ajout d'un nouveau produit dans le panier
     const basketItem = {
       _id: product._id,
       color: color,
       qty: parseInt(quantity),
       name: product.name,
       imageUrl: product.imageUrl,
-      price: product.price,
       altTxt: product.altTxt,
     };
-    basket.push(basketItem);
-    alert ("Le produit a été ajouté")
+    basket.push(basketItem)
+    alert("Le produit " + product.name + " a été ajouté")
   }
-  localStorage.setItem("basket", JSON.stringify(basket));
+  localStorage.setItem("basket", JSON.stringify(basket))
+}
+
+/**
+ * Récupère un produit à partir de son id dans l'url et l'affiche sur la page
+ * @returns {Promise<void>}
+ */
+async function getProductById() {
+  const id = getKeyInUrl("id")
+  currentProduct = await getProduct(id)
+  displaySingleProduct(currentProduct)
 }
 
 getProductById();
