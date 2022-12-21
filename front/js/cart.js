@@ -1,4 +1,4 @@
-let productsList = []
+let productsList = [];
 
 // Ajout de l'action commander au clic sur l'input submit
 const orderSubmit = document.querySelector("#order");
@@ -34,7 +34,7 @@ function changeProductQuantity(event) {
   // Mise à jour de la quantité de produits si le produit est trouvé
   if (productIndex > -1) {
     products[productIndex].qty = parseInt(qty);
-    const price = getProductPriceById(products[productIndex]._id)
+    const price = getProductPriceById(products[productIndex]._id);
     elPrice.innerHTML = qty * price + ` &euro;`;
   }
 
@@ -53,7 +53,7 @@ function displayTotalPrice(products) {
 
   // Calcul du prix total
   for (const product of products) {
-    const productPrice = getProductPriceById(product._id)
+    const productPrice = getProductPriceById(product._id);
     const price = productPrice * product.qty;
     total += price;
   }
@@ -76,12 +76,12 @@ function deleteCartProduct(event) {
   const productColor = parent.dataset.color;
 
   // Recherche du produit, ayant pour id productId et couleur ProductColor
-  const products = getProductFromLocalStorage();
+  const products = getProductFromLocalStorage()
   const productIndex = findProductByIdAndColor(
     products,
     productId,
     productColor
-  );
+  )
 
   // Suppression du produit dans le local Storage et convertion en chaine de caractère
   if (productIndex > -1) {
@@ -122,18 +122,18 @@ function setTotalQuantityProduct(products) {
 
 /**
  * Retourne le prix d'un produit à partir de son identifiant
- * @param {string} id 
+ * @param {string} id
  * @returns {number}
  */
 function getProductPriceById(id) {
-  const findIndex = productsList.findIndex(function(value){
+  const findIndex = productsList.findIndex(function (value) {
     if (value._id === id) {
       return true
-    } else{
+    } else {
       return false
     }
   })
-  if (findIndex >-1){
+  if (findIndex > -1) {
     return productsList[findIndex].price
   } else {
     return null
@@ -146,7 +146,9 @@ function getProductPriceById(id) {
  * @returns {void}
  */
 function displayCartProduct(product) {
-  const price = getProductPriceById(product._id)
+  //Définition du prix par la fonction qui retourne le prix d'un produit à partir de son identifiant
+  const price = getProductPriceById(product._id);
+  
   const sectionCart = document.getElementById("cart__items");
   const article = document.createElement(`article`);
   const imgContainer = document.createElement("div");
@@ -224,8 +226,8 @@ function displayCartProduct(product) {
  */
 async function displayCart() {
   productsList = await getProducts()
-  
-  const products = getProductFromLocalStorage();
+
+  const products = getProductFromLocalStorage()
 
   // verifier si le panier est vide
   if (!products) {
@@ -233,18 +235,18 @@ async function displayCart() {
   }
 
   for (const product of products) {
-    displayCartProduct(product);
+    displayCartProduct(product)
   }
 
   // Calcule et affiche le prix total des produits
-  displayTotalPrice(products);
+  displayTotalPrice(products)
 
   // Calcule et affiche la quantité totale des produits
-  setTotalQuantityProduct(products);
+  setTotalQuantityProduct(products)
 }
 
 /**
- * Verifie sur la valeur match avec la l'expression régulière passée en paramètre
+ * Verifie si la valeur match avec  et @l'expression régulière passée en paramètre
  * Affiche un message d'erreur dans fielderror en cas de non-correspondance
  * @param {string} value
  * @param {string} error
@@ -334,23 +336,23 @@ async function orderAction(event) {
     email,
     "Vous devez entrer une adresse email",
     emailErrorEl
-  );
+  )
 
   if (firstName) {
     isValidFirstname = validatePatternField(
       firstName,
-      "Le prénom doit être compris entre 3 et 50 caractères alphanumérique",
-      /^[\w\s]{3,50}$/,
+      "Le prénom doit être compris entre 3 et 50 caractères et ne peut pas contenir de chiffres",
+      /^[a-z A-Z-]{3,50}$/,
       firstNameErrorEl
-    );
+    )
   }
   if (lastName) {
     isValidLastname = validatePatternField(
       lastName,
-      "Le nom doit être compris entre 3 et 50 caractères alphanumérique",
-      /^[\w\s]{3,50}$/,
+      "Le nom doit être compris entre 3 et 50 caractères et ne peut pas contenir de chiffres",
+      /^[a-z A-Z-]{3,50}$/,
       lastNameErrorEl
-    );
+    )
   }
   if (address) {
     isValidAdress = validatePatternField(
@@ -358,7 +360,7 @@ async function orderAction(event) {
       "L'adresse doit être comprise entre 3 et 100 caractères alphanumérique",
       /^[\w\s,.]{3,100}$/,
       addressErrorEl
-    );
+    )
   }
   if (city) {
     isValidCity = validatePatternField(
@@ -366,7 +368,7 @@ async function orderAction(event) {
       "La ville doit être comprise entre 3 et 100 caractères alphanumérique",
       /^[\w\s,.]{3,100}$/,
       cityErrorEl
-    );
+    )
   }
 
   if (email) {
@@ -375,7 +377,7 @@ async function orderAction(event) {
       "Adresse email invalide",
       /^[0-9a-z_\-.]{1,100}@[0-9a-z\-_.]{1,50}.[a-z]{2,5}$/,
       emailErrorEl
-    );
+    )
   }
 
   if (
@@ -394,9 +396,9 @@ async function orderAction(event) {
     address: address,
     email: email,
     city: city,
-  };
-  const productsStore = getProductFromLocalStorage();
-  const products = [];
+  }
+  const productsStore = getProductFromLocalStorage()
+  const products = []
 
   if (!productsStore) {
     alert("Vous n'avez pas encore d'articles dans le panier");
@@ -412,16 +414,17 @@ async function orderAction(event) {
     body: JSON.stringify({
       contact: contact,
       products: products,
+      
     }),
     headers: {
       "Content-Type": "application/json",
     },
-  });
-  const data = await response.json();
+  })
+  const data = await response.json()
 
-  localStorage.removeItem("basket");
+  localStorage.removeItem("basket")
 
-  window.location.href = "./confirmation.html?orderId=" + data.orderId;
+  window.location.href = "./confirmation.html?orderId=" + data.orderId
 }
 
-displayCart();
+displayCart()
